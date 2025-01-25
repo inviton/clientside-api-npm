@@ -1,4 +1,4 @@
-# @inviton/clientside-api
+# inviton-clientside-api
 
 [![npm package][npm-img]][npm-url]
 [![Downloads][downloads-img]][downloads-url]
@@ -9,7 +9,7 @@
 ## Install
 
 ```bash
-npm install @inviton/clientside-api
+npm install inviton-clientside-api
 ```
 
 ## About the library
@@ -21,7 +21,7 @@ Documentation with some practical examples for the most common use cases can be 
 ## Usage
 
 ```ts
-import { invitonApi } from '@inviton/clientside-api';
+import { invitonApi } from 'inviton-clientside-api';
 
 (function() {
     invitonApi.ticketSelector.renderForIds({

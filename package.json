@@ -1,5 +1,5 @@
 {
-  "name": "@inviton/clientside-api",
+  "name": "inviton-clientside-api",
   "version": "1.2.2",
   "description": "Inviton's clietnside API embedded as a NPM package",
   "main": "./dist/index.js",
