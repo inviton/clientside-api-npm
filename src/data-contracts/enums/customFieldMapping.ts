@@ -1,0 +1,22 @@
+export const enum CustomFieldMapping {
+    None = 0,
+    Name = 1,
+    Surname = 2,
+    Gender = 3,
+    Address = 4,
+    City = 5,
+    Country = 6,
+    Age = 7,
+    BirthDate = 8,
+    CompetitorNumber = 9,
+    Team = 10,
+    Category = 11,
+    HolderEmail = 12,
+    Phone = 13,
+    Company = 14,
+    JobTitle = 15,
+    ZIP = 16,
+    CompanyId = 17,
+    TaxId = 18,
+    VatId = 19
+}
