@@ -1,6 +1,6 @@
 {
   "name": "inviton-clientside-api",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Inviton's clietnside API embedded as a NPM package",
   "main": "./dist/index.js",
   "files": [
@@ -14,7 +14,8 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --minify",
+    "build": "node ./cli/build-lib.js",
+    "build-before": "tsup src/index.ts --format cjs,esm --dts --minify --tsconfig ./tsconfig.json",
     "clean": "rm -rf ./lib/",
     "cm": "cz",
     "test:watch": "jest --watch",

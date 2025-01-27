@@ -18,7 +18,7 @@ interface EventInteractionsArgsBase {
     serviceHost?: string
 }
 
-export class EventInteractionResources {
+export interface EventInteractionResources {
     annonymous?: string;
     submit?: string;
     customAnswer?: string;
@@ -34,7 +34,7 @@ export class EventInteractionResources {
     surveySubmitError?: string;
 }
 
-export class EventInteractionTemplates {
+export interface EventInteractionTemplates {
     interactionWrap?: string;
     surveySubmitButton?: string;
     radioButton?: string;

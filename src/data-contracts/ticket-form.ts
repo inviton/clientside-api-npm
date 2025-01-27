@@ -891,16 +891,16 @@ export interface TicketFormShoppingCartAddRequest extends TicketFormShoppingCart
     goToCartClicked?: () => void;
 }
 export interface TicketFormCartRenderArgs {
-    paymentFormContext: InviDom | HTMLElement | string;
-    currentContextType: TicketFormCartRenderArgsContextType;
+    paymentFormContext?: InviDom | HTMLElement | string;
+    currentContextType?: TicketFormCartRenderArgsContextType;
     ticketFormInstance?: TicketFormInstance;
     itemAddedRenderer?: TicketFormCartItemAddedRenderer;
     cartContentsRenderer?: TicketFormCartContentsRenderer;
-    contextRoot: InviDom | HTMLElement | string;
-    icon: TicketFormCartRenderIconArgs;
-    methods: any;
-    templates: TicketFormCartTemplates;
-    getResource: (resKey: any) => string;
+    contextRoot?: InviDom | HTMLElement | string;
+    icon?: TicketFormCartRenderIconArgs;
+    methods?: any;
+    templates?: TicketFormCartTemplates;
+    getResource?: (resKey: any) => string;
 }
 export interface TicketFormCartContentsRenderArgs {
     targetElement: HTMLElement | string | InviDom;
@@ -936,7 +936,7 @@ export interface TicketFormCartRenderIconArgs {
     preferFontAwesome: boolean;
 }
 export interface TicketFormCartSettings extends TicketFormCartRenderArgs {
-    enabled: boolean;
+    enabled?: boolean;
 }
 export interface TicketFormCartPaymentFormRenderArgs {
     ticketFormInstance?: TicketFormInstance;
@@ -1378,19 +1378,19 @@ export interface TicketFormErrorSettings {
     /**
      * Determines if error message if shown to the user
      */
-    showMessage: boolean;
+    showMessage?: boolean;
     /**
      * Determines if CSS interface should be applied to the invalid element
      */
-    setClass: boolean;
+    setClass?: boolean;
     /**
      * CSS interface that is applied to the invalid element in case of not being overriden by the @see {@link setClass} switch
      */
-    inputClass: string;
+    inputClass?: string;
     /**
      * CSS interface applied to the error message element in case of not being overriden by the @see {@link showMessage} switch
      */
-    messageClass: string;
+    messageClass?: string;
 }
 /**
  * Settings of the form's success handling generals
@@ -1399,15 +1399,15 @@ export interface TicketFormSuccessSettings {
     /**
      * On success, form content is cleared so that ofther form participant could be added
      */
-    clearForm: boolean;
+    clearForm?: boolean;
     /**
      * Determines if success message if shown to the user
      */
-    showMessage: boolean;
+    showMessage?: boolean;
 }
 export interface TicketFormDebugSettings {
-    enabled: boolean;
-    forceDev: boolean;
+    enabled?: boolean;
+    forceDev?: boolean;
 }
 export interface PaymentFormUtilsInitArgs {
     instance: TicketFormInstance;
@@ -1424,31 +1424,31 @@ export interface PaymentFormUtilsInitArgs {
  */
 export interface TicketFormPaymentFormSettings {
     /** @hidden */
-    enabled: boolean;
+    enabled?: boolean;
     /** @hidden */
-    targetSelector: string;
+    targetSelector?: string;
     /**
      * Switch determining if the discount code input should be rendered or not. Set to false only if you have a reason to
      */
-    renderPromoCode: boolean;
+    renderPromoCode?: boolean;
     /**
      * Switch determining if the discount code input should be rendered or not. Set to false only if you have a reason to
      */
-    renderItemSummary: boolean;
+    renderItemSummary?: boolean;
     /**
      * Switch determining if the donation input should be rendered or not. Set to false only if you have a reason to
      */
-    renderDonation: boolean;
+    renderDonation?: boolean;
     /**
      * Switch determining if the countdown indicating how much time does the buyer have to complete the order should be rendered or not. Set to false only if you have a reason to
      */
-    renderCountdown: boolean;
+    renderCountdown?: boolean;
     /**
      * Default value for the donation field
      */
-    defaultDonation: number;
+    defaultDonation?: number;
     /** @hidden */
-    renderTargetEmail: boolean;
+    renderTargetEmail?: boolean;
     /**
      * Custom handler for promo-code application. This could be used for programming your own API logic that determines if the user is eligible for discount
      *
@@ -1755,41 +1755,41 @@ export interface TicketFormRenderSettings {
      * </div>
      * ```
      */
-    baseTemplate: string;
+    baseTemplate?: string;
     /**
      * Render mode of the forms. Migh be inviton internal form engine (default) or bootstrap.
      */
-    renderMode: CustomFieldRenderMode;
+    renderMode?: CustomFieldRenderMode;
     /**
      * What elements of the form are rendered using the material design look
      */
-    materialDesign: MaterialDesignMode;
+    materialDesign?: MaterialDesignMode;
     /**
      * Not implemented...
      */
-    designStrictness: DesignStrictness;
+    designStrictness?: DesignStrictness;
     /**
      * Determines if field label is rendered
      */
-    showLabel: boolean;
+    showLabel?: boolean;
     /**
      * Determines if label is rendered as the placeholder of the form input
      */
-    labelAsPlaceholder: boolean;
+    labelAsPlaceholder?: boolean;
     /**
      * Additional CSS interface applied to the form input
      */
-    fieldsClass: string;
+    fieldsClass?: string;
     /**
      * If price is rendered into the submit button's label. Leave true, otherwise the customer will have no information about the payment amount
      */
-    renderPriceIntoSubmitButton: boolean;
+    renderPriceIntoSubmitButton?: boolean;
     /**
      * Determines if the form should be wrapped in a "container" interface in case of Bootstrap render mode
      */
-    bootstrapWrapInContainer: boolean;
+    bootstrapWrapInContainer?: boolean;
     /** @hidden */
-    columnClass: string;
+    columnClass?: string;
 }
 /**
  * Template set for the order and payment form. Keep in mind when updaing, that the templating engine is driven by the data-inv-* attributes as well as {{value_placeholder}} parameter attributes. These have to be kept in the modified tempaltes as well
@@ -1798,35 +1798,35 @@ export interface TicketFormRootTemplates {
     /**
      * Price-tag that is injected into the submit button. This informs the buyer on how much he/she will pay
      */
-    submitButtonPrice: string;
+    submitButtonPrice?: string;
     /**
      * Template for case when the event is already sold-out
      */
-    soldOut: string;
+    soldOut?: string;
     /**
      * Template for case when the event is not published yet/anymore
      */
-    notPublished: string;
+    notPublished?: string;
     /**
      * Template for error case when some of the ordered items are not available anymore [one or more of the requested tickets are out-of-sale or sold out already]
      */
-    someUnavailable: string;
+    someUnavailable?: string;
     /**
      * Radio button template
      */
-    radioButton: string;
+    radioButton?: string;
     /**
      * Checkbox template
      */
-    checkbox: string;
+    checkbox?: string;
     /**
      * Payment form templates
      */
-    paymentForm: TicketFormPaymentFormTemplates;
+    paymentForm?: TicketFormPaymentFormTemplates;
     /**
      * Button templates
      */
-    buttons: TicketFormButtonTemplates;
+    buttons?: TicketFormButtonTemplates;
 }
 /**
  * Settings for the aggregated tickets
@@ -1835,16 +1835,16 @@ export interface TicketFormAggregationSettings {
     /**
      * Determines whether aggregations are enabled. By default this is server-driven and should not be set to false unless there is a very good reason to
      */
-    enabled: boolean;
+    enabled?: boolean;
     /**
      * ROOT template. If null, instance.renderSettings.baseTemplate is used
      */
-    templateFormElement: string;
+    templateFormElement?: string;
     /**
      * Label of the template
      */
-    templateLabel: string;
-    templateTicketPrice: string;
+    templateLabel?: string;
+    templateTicketPrice?: string;
     /**
      * Determines maximum count that can be ordered
      */
@@ -1971,10 +1971,6 @@ export interface SeatingReservationItem {
     TicketDateId: number;
 }
 export interface TicketFormInstance {
-    /** @hidden */
-    saveAutoFillData?: boolean;
-    /** @hidden */
-    passwordToken?: string;
     /**
      * If specified, text of the submit button will be hardcoded to this value
      */
@@ -3820,19 +3816,19 @@ export interface TicketFormTermsSettings {
     /**
      * Determines if terms should be rendered [defaults true]. BY SETTING FALSE YOU AKNOWLEDGE THAT ANY LEGAL ISSUES RESULTING FROM DISABLING IS LIABILITY OF THE IMPLEMENTATOR
      */
-    enabled: boolean;
+    enabled?: boolean;
     /**
      * Determines if inviton portal terms and condition should be rendered. BY SETTING FALSE YOU AKNOWLEDGE THAT ANY LEGAL ISSUES RESULTING FROM DISABLING IS LIABILITY OF THE IMPLEMENTATOR
      */
-    invitonTerms: boolean;
+    invitonTerms?: boolean;
     /**
      * Determines if mandatory terms are grouped into one single checkbox
      */
-    groupTerms: boolean;
+    groupTerms?: boolean;
     /**
      * Determines if terms are pre-checked by default BY SETTING FALSE YOU AKNOWLEDGE THAT ANY LEGAL ISSUES RESULTING FROM DISABLING IS LIABILITY OF THE IMPLEMENTATOR
      */
-    defaultChecked: boolean;
+    defaultChecked?: boolean;
 }
 export interface CustomFieldDefinitionDTO {
     /**
