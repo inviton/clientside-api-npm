@@ -1,6 +1,6 @@
 {
   "name": "inviton-clientside-api",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Inviton's clietnside API embedded as a NPM package",
   "main": "./dist/index.js",
   "files": [

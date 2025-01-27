@@ -1592,6 +1592,24 @@ export interface TicketFormPlugin {
      */
     onPaymentFormBackButtonClicked(): boolean;
     /**
+     * Event callback raised once the payment form cancel is complete and TicketForm is about to be shown
+     * @event
+     *
+     * @example <caption>Sample usage</caption>
+     *
+     *
+     * ```js
+     * invitonApi('ticketSelector', 'renderForIds', {
+     *   eventIds: [9332],
+     *   targetElement: document.getElementById('invitonApiWrap'),
+     *   onPaymentFormCancelComplete: function() {
+     *       console.log('just about to show ticket form again');
+     *   }
+         * })
+     * ```
+     */
+    onPaymentFormCancelComplete(): boolean
+    /**
      * Callback event which fires once paymentProcess is complete (free ticket is sent, online ticket is paid, bank-transfer order is submitted, or CashOnDelivery order is submitted)
      * IMPORTANT NOTE - in order to work for online payments [type==PaymentProcessType.Online], plugin has to be defined as a global one
      * @event
@@ -2012,6 +2030,10 @@ export interface TicketFormInstance {
     /** @hidden */
     forcePoweredBy?: boolean;
     /**
+     * If specified, full form is blocked while fetching/submitting data instead of just the buttons spinner
+     */
+    useElementBlockerOnFetch?: boolean;
+    /**
      * If specified, text of the back button on the payment selection form will be hardcoded to this value
      */
     paymentBackButtonText?: string;
@@ -2170,6 +2192,24 @@ export interface TicketFormInstance {
      * ```
      */
     onPaymentFormBackButtonClicked?(): boolean;
+    /**
+     * Event callback raised once the payment form cancel is complete and TicketForm is about to be shown
+     * @event
+     *
+     * @example <caption>Sample usage</caption>
+     *
+     *
+     * ```js
+     * invitonApi('ticketSelector', 'renderForIds', {
+     *   eventIds: [9332],
+     *   targetElement: document.getElementById('invitonApiWrap'),
+     *   onPaymentFormCancelComplete: function() {
+     *       console.log('just about to show ticket form again');
+     *   }
+         * })
+     * ```
+     */
+    onPaymentFormCancelComplete(): boolean
     /**
      * Event callback raised once ticket reservation is successful [this happens once the order form is submitted]. Next step after this is mostly the payment method selection. One can stop the process be returning false from this method.
      * @event
