@@ -177,7 +177,7 @@ export const invitonApi = {
         */
         async renderForIds(args: SeatingRenderIdsArgs): Promise<ISeatingRenderer> {
             await loadTicketForm();
-            return rootInviton().seating.renderForData(args);
+            return rootInviton().seating.renderForIds(args);
         }
     },
     /**
