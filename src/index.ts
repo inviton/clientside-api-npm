@@ -78,6 +78,24 @@ const ensureScriptLoadSectionLoaded = (section: string): Promise<void> => {
                     resolve();
                 }
             });
+        } else {
+            let retryCount = 0;
+            const looper = () => {
+                if ((rootInviton() || {})[section] != null) {
+                    resolve();
+                } else {
+                    setTimeout(() => {
+                        retryCount += 0;
+                        if (retryCount < 800) {
+                            looper();
+                        } else {
+                            reject('Error loading API section ' + section);
+                        }
+                    }, 50);
+                }
+            };
+
+            looper();
         }
     })
 }
