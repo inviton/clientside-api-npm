@@ -4,7 +4,7 @@ import type { EventListRenderArgs } from "./data-contracts/event-list";
 import type { ReservationSystemApiArgs } from "./data-contracts/reservation-system";
 import type { ScheduleItemRendererArgs, ScheduleListRendererArgs, SchedulePeopleRendererArgs, SchedulePersonRendererArgs, ScheduleRendererArgs } from "./data-contracts/schedule";
 import type { dialogUtils as DialogUtils, InitTicketFormArgs, InviDomStatic, invitonLLAPI as InvitonLLAPI, ISeatingRenderer, PreInitArgs, SeatingRenderDataArgs, SeatingRenderIdsArgs, TicketFormMerchRendererArgs, TicketFormRenderArgs, TicketSelectorRenderIdsArgs } from "./data-contracts/ticket-form";
-
+type InvitonApiSection = 'ticketSelector' | 'ticketForm' | 'seating' | 'merch' | 'eventSchedule' | 'eventInteraction' | 'eventList' | 'eventDetail' | 'reservationSystem';
 
 (function () {
     // @ts-ignore
@@ -27,38 +27,41 @@ const rootInviton = () => {
  * Hacky way to awaitedly render script's section as not all parts provide direct way of preloading
  * 
  */
-// const ensureSectionLoaded = (section: string, methodName: string, args: any): Promise<void> => {
-//     return new Promise((resolve, reject) => {
-//         if (rootInviton()?.ticketForm != null) {
-//             resolve();
-//             return;
-//         }
+const ensureSectionWithoutCallbackLoaded = (section: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        if ((rootInviton() || {})[section] != null) {
+            resolve();
+            return;
+        }
 
-//         if (!isLoading) {
-//             isLoading = true;
-//             api(section, methodName, args);
-//         }
+        if (isLoadingMap[section] == null) {
+            isLoadingMap[section] = true;
+            api(section, 'toString', {
+                callback: () => {
+                    resolve();
+                }
+            });
+        }
 
-//         let retryCount = 0;
-//         const looper = () => {
-//             if (rootInviton()?.ticketForm != null) {
-//                 resolve();
-//                 return;
-//             }
+        let retryCount = 0;
+        const looper = () => {
+            if ((rootInviton() || {})[section] != null) {
+                resolve();
+            } else {
+                setTimeout(() => {
+                    retryCount += 0;
+                    if (retryCount < 800) {
+                        looper();
+                    } else {
+                        reject('Error loading API section ' + section);
+                    }
+                }, 50);
+            }
+        };
 
-//             if (retryCount > 120) {
-//                 isLoading = false;
-//                 reject('Timeout');
-//             }
-
-//             setTimeout(() => {
-//                 looper();
-//             }, 100)
-//         };
-
-//         looper();
-//     })
-// }
+        looper();
+    })
+}
 
 /**
  * Hacky way to awaitedly render script's section as not all parts provide direct way of preloading
@@ -467,6 +470,53 @@ export const invitonApi = {
     async getInviDom(): Promise<InviDomStatic> {
         await loadTicketForm();
         return rootInviton().inviDom;
+    },
+
+    /**
+     * Determines if given section of API is already loaded
+     */
+    isSectionLoaded(section: InvitonApiSection): boolean {
+        return ((rootInviton() || {})[section] != null);
+    },
+
+    /**
+     * Loads Inviton API section
+     */
+    loadSection(section: InvitonApiSection, timeout?: number): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            let timeoutHandle: any;
+            let isFired = false;
+
+            if (timeout != null && timeout > 0) {
+                timeoutHandle = setTimeout(() => {
+                    if (!isFired) {
+                        isFired = true;
+                        timeoutHandle = null as any;
+                        reject('timeout');
+                    }
+                }, timeout);
+            }
+
+            if (section == "seating" || section == 'ticketForm' || section == 'ticketSelector') {
+                await loadTicketForm();
+            } else if (section == 'eventInteraction') {
+                await loadEventInteractions();
+            } else {
+                await ensureSectionWithoutCallbackLoaded(section);
+            }
+
+            if (!isFired) {
+                isFired = true;
+                try {
+                    clearTimeout(timeoutHandle);
+                } catch (error) { }
+                timeoutHandle = null;
+                resolve();
+            }
+        });
     }
 };
+
+
+
 
