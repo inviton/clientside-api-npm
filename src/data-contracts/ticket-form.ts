@@ -1631,6 +1631,24 @@ export interface TicketFormPlugin {
      */
     onPaymentProcessComplete?(data: PaymentFormProcessCompleteNotification): void;
     /**
+     * Event callback raised every time the price changed
+     * @event
+     *
+     * @example <caption>Sample usage</caption>
+     *
+     *
+     * ```js
+     * invitonApi('ticketSelector', 'renderForIds', {
+     *   eventIds: [9332],
+     *   targetElement: document.getElementById('invitonApiWrap'),
+     *   onPriceChanged: function (data) {
+     *          alert(`New price is: ${data.NewPrice} EUR.`);
+     *   },
+     * })
+     * ```
+     */
+    onPriceChanged(data: PriceChangeArgs): void;
+    /**
      * Method which allows post-process of payment result message
      * IMPORTANT NOTE - in order to work for online payments [type==PaymentProcessType.Online], plugin has to be defined as a global one
      * @event
@@ -1988,6 +2006,10 @@ export interface SeatingReservationItem {
     TicketId?: number;
     TicketDateId: number;
 }
+export interface PriceChangeArgs {
+    NewPrice: number,
+    Origin?: "ticketSelector" | "paymentForm",
+}
 export interface TicketFormInstance {
     /**
      * If specified, text of the submit button will be hardcoded to this value
@@ -2172,6 +2194,24 @@ export interface TicketFormInstance {
      * ```
      */
     onFormBackButtonClicked?(caller?: string): void;
+    /**
+     * Event callback raised every time the price changed
+     * @event
+     *
+     * @example <caption>Sample usage</caption>
+     *
+     *
+     * ```js
+     * invitonApi('ticketSelector', 'renderForIds', {
+     *   eventIds: [9332],
+     *   targetElement: document.getElementById('invitonApiWrap'),
+     *   onPriceChanged: function (data) {
+     *          alert(`New price is: ${data.NewPrice} EUR.`);
+     *   },
+     * })
+     * ```
+     */
+    onPriceChanged(data: PriceChangeArgs): void;
     /**
      * Event callback raised once the back button is clicked on the payment method selection form. The back button click can be reverted by returning false from the method
      * @event
