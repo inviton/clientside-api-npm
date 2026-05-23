@@ -1608,7 +1608,7 @@ export interface TicketFormPlugin {
          * })
      * ```
      */
-    onPaymentFormCancelComplete(): boolean
+    onPaymentFormCancelComplete?(): boolean
     /**
      * Callback event which fires once paymentProcess is complete (free ticket is sent, online ticket is paid, bank-transfer order is submitted, or CashOnDelivery order is submitted)
      * IMPORTANT NOTE - in order to work for online payments [type==PaymentProcessType.Online], plugin has to be defined as a global one
@@ -1647,7 +1647,7 @@ export interface TicketFormPlugin {
      * })
      * ```
      */
-    onPriceChanged(data: PriceChangeArgs): void;
+    onPriceChanged?(data: PriceChangeArgs): void;
     /**
      * Method which allows post-process of payment result message
      * IMPORTANT NOTE - in order to work for online payments [type==PaymentProcessType.Online], plugin has to be defined as a global one
@@ -2211,7 +2211,7 @@ export interface TicketFormInstance {
      * })
      * ```
      */
-    onPriceChanged(data: PriceChangeArgs): void;
+    onPriceChanged?(data: PriceChangeArgs): void;
     /**
      * Event callback raised once the back button is clicked on the payment method selection form. The back button click can be reverted by returning false from the method
      * @event
@@ -2249,7 +2249,7 @@ export interface TicketFormInstance {
          * })
      * ```
      */
-    onPaymentFormCancelComplete(): boolean
+    onPaymentFormCancelComplete?(): boolean
     /**
      * Event callback raised once ticket reservation is successful [this happens once the order form is submitted]. Next step after this is mostly the payment method selection. One can stop the process be returning false from this method.
      * @event
@@ -2359,6 +2359,68 @@ export interface TicketFormInstance {
     onShoppingCartComplete?(): void;
     /** @hidden */
     onShoppingCartClosed?(): void;
+    /**
+     * Optional hijack of the reservation HTTP call. When supplied, the widget will NOT
+     * POST to /api/v1/EventReservation - it invokes this callback instead and feeds the
+     * result back into the same success / error pipeline as the default flow (loading
+     * indicator, recaptcha-retry, onReserved / onZeroPrice / onError, duplicate-name
+     * confirmation dialog) so the rest of the widget continues unchanged.
+     *
+     * Typical use case: the integrator owns a server-side API key for the External API
+     * (`/api/v1/external/*`) and wants the widget to call their backend - which then
+     * calls the External API with the key attached - instead of the public reservation
+     * endpoint. Keeping the API key on the server is the entire point; never expose it
+     * to the browser bundle.
+     *
+     * The callback receives the same `postArgs` that the widget would have POSTed and
+     * MUST resolve with an `EventReservationResponse`-shaped object so the widget can
+     * continue. The integrator's backend is responsible for translating between the
+     * widget's shape and the External API's shape.
+     *
+     * @example <caption>Routing reservation through your own backend</caption>
+     * ```js
+     * invitonApi('ticketForm', 'initElement', {
+     *   element: document.getElementById('inv-wrap'),
+     *   reservationOverride: function (postArgs, onSuccess, onError) {
+     *     fetch('/my-backend/reserve', {
+     *       method: 'POST',
+     *       headers: { 'Content-Type': 'application/json' },
+     *       body: JSON.stringify(postArgs)
+     *     })
+     *     .then(function (r) { return r.json(); })
+     *     .then(onSuccess)
+     *     .catch(function (e) { onError({ responseText: e && e.message, status: 500 }); });
+     *   }
+     * });
+     * ```
+     */
+    reservationOverride?(postArgs: EventReservationPostArgs, onSuccess: (response: EventReservationResponse) => void, onError: (err: { responseText?: string; status?: number }) => void): void;
+    /**
+     * Optional hijack of the unreserve HTTP call. Symmetric with
+     * {@link reservationOverride} - integrators routing reservation through their own
+     * backend usually want to route unreserve (cart-item removal, basket abandonment,
+     * payment-form cancellation) through the same path so the lifecycle stays
+     * consistent.
+     *
+     * This hook is honoured by every cancel-reservation call site in the widget:
+     * shopping-cart icon renderer, shopping-cart row "remove" button, and the
+     * payment-form back button.
+     *
+     * @example <caption>Routing unreserve through your own backend</caption>
+     * ```js
+     * invitonApi('ticketForm', 'initElement', {
+     *   element: document.getElementById('inv-wrap'),
+     *   unreserveOverride: function (postArgs, onSuccess, onError) {
+     *     fetch('/my-backend/unreserve', {
+     *       method: 'POST',
+     *       headers: { 'Content-Type': 'application/json' },
+     *       body: JSON.stringify(postArgs)
+     *     }).then(onSuccess).catch(onError);
+     *   }
+     * });
+     * ```
+     */
+    unreserveOverride?(postArgs: { TicketNumberLookupIds: string[]; Mode: number }, onSuccess: () => void, onError: (err: AjaxErrorLegacy) => void): void;
     /**
      * If the hosting site has fixed header, overriding this can help with auto-scroll. The returned value should be the negative of the size of the fixed header plus the desired offset [10-20px]
      * @default -80
@@ -2922,6 +2984,45 @@ export interface EventReservationSubmitRequestArgs {
     onError?(errArr?: Array<ReadCustomFieldFormError>): any;
     validateAlreadyAdded?: boolean;
     passwordToken?: string;
+    /**
+     * Optional override that hijacks the reservation HTTP call. When supplied, the
+     * widget will NOT POST to /api/v1/EventReservation - it will instead invoke this
+     * callback and feed the result back into the same success / error pipeline as the
+     * default flow (loading indicator, onReserved, onZeroPrice, onError).
+     *
+     * Typical use case: the integrator owns the API key for /api/v1/external/* and
+     * wants the widget to call their backend (which calls the External API on the
+     * server side) instead of the public reservation endpoint.
+     *
+     * The callback receives the same `postArgs` that the widget would have POSTed and
+     * MUST resolve with an `EventReservationResponse`-shaped object so the rest of the
+     * widget continues unchanged. Map the External API response yourself
+     * (TicketNumberLookupIds + ReservationSeconds + Status = Reserved).
+     */
+    reservationOverride?: (postArgs: EventReservationPostArgs, onSuccess: (response: EventReservationResponse) => void, onError: (err: { responseText?: string; status?: number }) => void) => void;
+}
+/**
+ * Wire shape posted to /api/v1/EventReservation by the widget. Useful when implementing
+ * {@link EventReservationSubmitRequestArgs.reservationOverride}.
+ */
+export interface EventReservationPostArgs {
+    TicketDateForms: any;
+    TicketNumberLookupIds?: string[];
+    Aggregations?: any;
+    AffiliateCode?: string;
+    SeatingData?: any;
+    SendEmail?: boolean;
+    Language?: string;
+    ReservationType?: number;
+    GuestlistToken?: string;
+    ParentTicketNumberId?: string;
+    IsZeroPrice?: boolean;
+    NullUser?: boolean;
+    CaptchaResponse?: string;
+    DefaultMailTemplate?: number;
+    PasswordToken?: string;
+    IsMarketplace?: boolean;
+    marketplaceTicketNumberIds?: any;
 }
 export interface TicketNumberAggregation {
     TicketId: number;
@@ -2950,6 +3051,13 @@ export interface CancelReservationRequestArgs {
      * A callback that is executed if the request fails.
      */
     onError?(err: AjaxErrorLegacy): void;
+    /**
+     * Optional override that hijacks the unreserve HTTP call. Symmetric with
+     * {@link EventReservationSubmitRequestArgs.reservationOverride}; integrators
+     * routing reservation through their own backend usually want to route unreserve
+     * too so the lifecycle stays consistent.
+     */
+    unreserveOverride?: (postArgs: { TicketNumberLookupIds: string[]; Mode: number }, onSuccess: () => void, onError: (err: AjaxErrorLegacy) => void) => void;
 }
 export interface OrderIsPaidRequestArgs {
     /**
